@@ -10,6 +10,10 @@ st.set_page_config(page_title="GenAI Loan Risk Assessment", layout="wide")
 
 st.title("🏦 GenAI Loan Risk Assessment Assistant")
 st.caption("ITI122 – Loan Risk Assessment with Generative AI")
+st.caption("Jun Ren")
+st.caption("Adam")
+st.caption("Shao Xian")
+
 
 # ===============================
 # OPENAI CLIENT
@@ -144,3 +148,4 @@ Rules:
     # OUTPUT (STEP 3–5)
     # ===============================
     st.code(response.choices[0].message.content, language="text")
+
