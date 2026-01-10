@@ -10,11 +10,8 @@ st.set_page_config(page_title="GenAI Loan Risk Assessment", layout="wide")
 
 st.title("🏦 GenAI Loan Risk Assessment Assistant")
 st.caption("ITI122 – Loan Risk Assessment with Generative AI")
-
 st.markdown("---")
 st.caption("Jun Ren · Adam · Shao Xian")
-
-
 
 # ===============================
 # OPENAI CLIENT
@@ -77,33 +74,26 @@ if st.button("Assess Loan Risk"):
     pr_status = pr_row.iloc[0]["PR Status"] if not pr_row.empty else "N/A"
 
     # ===============================
-    # STEP 1 & 2 (SYSTEM GENERATED)
+    # CUSTOMER INFORMATION DISPLAY
     # ===============================
-    st.subheader("📋 Loan Assessment Walkthrough")
+    st.subheader("📋 Customer Information")
 
-    step_text = f"""Customer Information:
+    customer_text = f"""
 Name: {credit_row['Name']}
-ID: {credit_row['ID']}
+Customer ID: {credit_row['ID']}
 Email: {credit_row['Email']}
-
-Step 1. Retrieve information for customer information
-Credit Score: {credit_row['Credit Score']}, Account Status: {account_row['Account Status']}, Nationality: {account_row['Nationality']}
+Credit Score: {credit_row['Credit Score']}
+Account Status: {account_row['Account Status']}
+Nationality: {account_row['Nationality']}
+PR Status: {pr_status}
 """
-
-    if account_row["Nationality"] == "Non-Singaporean":
-        step_text += f"""
-Step 2. Check PR Status (For Non-Singapore this extra Step is needed)
-PR Status -> {pr_status}
-"""
-
-    st.code(step_text, language="text")
+    st.code(customer_text, language="text")
 
     # ===============================
-    # GENAI PROMPT (STEP 3–5 ONLY)
+    # GENAI PROMPT (CLEAN OUTPUT)
     # ===============================
     prompt = f"""
 You are a bank loan officer.
-Follow the official workflow and continue from Step 3 onward.
 
 Bank Loan Overall Risk Policy:
 {risk_policy_text}
@@ -117,22 +107,16 @@ Account Status: {account_row['Account Status']}
 Nationality: {account_row['Nationality']}
 PR Status: {pr_status}
 
-Continue in this EXACT format:
+Provide the assessment in this format ONLY:
 
-Step 3. Check Overall Risk
-Credit Score: <value>, Account Status: <value> -> overall risk: <low/medium/high>
-
-Step 4. Check interest rate
-overall risk: <risk> -> <interest rate>
-
-Step 5. Report
-<Final recommendation sentence>
+Overall Risk: <low/medium/high>
+Recommended Interest Rate: <rate or not applicable>
+Recommendation: <final concise recommendation>
 
 Rules:
 - Use lowercase for risk
-- Use arrows (->) exactly
-- If Non-Singaporean and PR is false, do NOT recommend
-- Keep wording concise
+- Be concise and professional
+- If Non-Singaporean and PR is false, do not recommend
 """
 
     # ===============================
@@ -146,8 +130,7 @@ Rules:
         )
 
     # ===============================
-    # OUTPUT (STEP 3–5)
+    # OUTPUT
     # ===============================
+    st.subheader("🧠 GenAI Assessment Result")
     st.code(response.choices[0].message.content, language="text")
-
-
